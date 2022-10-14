@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import {fetchContacts} from '../redux/contactsOperations'
 import { BsFillPersonPlusFill } from 'react-icons/bs';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
@@ -8,10 +8,18 @@ import Filter from './Filter/Filter';
 import Message from './Message';
 import Modal from './Modal'
 import css from './App.module.css';
+import { Loader } from './ContactList/Loader.styled';
+
 
 export default function App() {
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false)
-  const contacts = useSelector(state => state.root.contacts)
+  const { items } = useSelector(state => state.root.contacts)
+  const { isLoading } = useSelector(state => state.root.contacts);
+  
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const toggleModal = () => {
     setShowModal(prevShowModal => !prevShowModal);
@@ -32,9 +40,9 @@ export default function App() {
         </Modal>
       )}
 
-      <h2 className={css.subtitle}>Contacts</h2>
+      <h2 className={css.subtitle}>Contacts {isLoading && <Loader />}</h2>
       <Filter />
-      {contacts.length > 0 ? (
+      {items.length > 0 ? (
         <ContactList />
       ) : (
         <Message text="So sad, you have no any contacts yet." />

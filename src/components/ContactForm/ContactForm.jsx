@@ -1,73 +1,79 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Report } from 'notiflix/build/notiflix-report-aio';
-import { nanoid } from 'nanoid';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { addContact, getContacts  } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contactsOperations';
 import css from './ContactForm.module.css';
 
 export default function ContactForm({ onClose }) {
-    const [name, setName] = useState('');
-    const [number, setNumber] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const { items } = useSelector(state => state.root.contacts);
 
-    const onChangeName = e => setName(e.currentTarget.value);
-    const onChangeNumber = e => setNumber(e.currentTarget.value);
+  const newContact = {
+    name,
+    phone,
+  };
 
-    const contacts = useSelector(getContacts);
-    const dispatch = useDispatch();
+  const onChangeName = e => setName(e.currentTarget.value);
+  const onChangeNumber = e => setPhone(e.currentTarget.value);
 
-    const onSubmitForm  = e => {
-        e.preventDefault();
+  const dispatch = useDispatch();
 
-        const newElement = { id: nanoid(), name, number };
+  const onSubmitForm  = e => {
+    e.preventDefault();
 
-        contacts.some(contact => contact.name === name)
-            ? Report.warning(
-                `${name}`,
-                'This user is already in the contact list.',
-                'OK',
-                )
-            : dispatch(addContact(newElement));
+    const findName = items.find(
+      e => e.name.toLowerCase() === name.toLowerCase()
+    );
 
-            reset();
-            onClose();
-    };
+    if (findName) {
+      alert(`${name} is already in contacts`);
+      setName('');
+      setPhone('');
+      return;
+    }
 
-    const reset = () => {
-        setName('');
-        setNumber('');
-    };
+    dispatch(addContact(newContact));
 
-    return (
-    <form onSubmit={onSubmitForm}>
-      <label className={css.label}>
-        <h2 className={css.title}>Name</h2>
-        <input className={css.input}
-          onChange={onChangeName}
-          type="text"
-          name="name"
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-        />
-      </label>
-      <label className={css.label}>
-        <h2 className={css.title}>Number</h2>
-        <input className={css.input}
-          onChange={onChangeNumber}
-          type="tel"
-          name="number"
-          value={number}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-        />
-      </label>
-      <button className={css.button} type="submit">Add contact</button>
-    </form>
+    reset();
+    onClose();
+  };
+
+  const reset = () => {
+    setName('');
+    setPhone('');
+  };
+
+  return (
+  <form onSubmit={onSubmitForm}>
+    <label className={css.label}>
+      <h2 className={css.title}>Name</h2>
+      <input className={css.input}
+        onChange={onChangeName}
+        type="text"
+        name="name"
+        value={name}
+        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+        required
+      />
+    </label>
+    <label className={css.label}>
+      <h2 className={css.title}>Number</h2>
+      <input className={css.input}
+        onChange={onChangeNumber}
+        type="tel"
+        name="number"
+        value={phone}
+        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+        required
+      />
+    </label>
+    <button className={css.button} type="submit">Add contact</button>
+  </form>
   );
 }
 

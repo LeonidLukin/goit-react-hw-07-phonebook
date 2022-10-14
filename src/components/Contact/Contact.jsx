@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import {useDispatch} from 'react-redux';
-import { deleteContact  } from '../../redux/contactsSlice';
+import { deleteContact  } from '../../redux/contactsOperations';
 
 import { FaTrash, FaUserAlt } from "react-icons/fa";
 import css from "./Contact.module.css";
 
-export default function Contact({ name, number, contactId }) {
+export default function Contact({ name, phone, contactId }) {
     const dispatch = useDispatch()
 
     return (
@@ -17,7 +17,7 @@ export default function Contact({ name, number, contactId }) {
                 <p>{name}</p>
             </div>
             <div className={css.wrapper}>
-                <p className={css.number}>{number}</p>
+                <p className={css.number}>{phone}</p>
                 <button
                     className={css.button}
                     type="button"
@@ -32,5 +32,5 @@ export default function Contact({ name, number, contactId }) {
 
 Contact.propTypes = {
     name: PropTypes.string.isRequired,
-    number: PropTypes.string.isRequired,
+    phone: PropTypes.string.isRequired,
 };
